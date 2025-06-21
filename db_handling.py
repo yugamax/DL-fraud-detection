@@ -3,7 +3,7 @@ from datetime import datetime
 from db_init import Base
 
 class Transactions(Base):
-    __tablename__ = "transactions"
+    __tablename__ = "transactions_data"
 
     id = Column(Integer, primary_key=True, index=True)
     FLAG = Column(Float, name="FLAG")

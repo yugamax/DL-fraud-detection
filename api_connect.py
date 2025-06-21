@@ -12,6 +12,7 @@ from db_init import SessionLocal, engine
 from db_handling import Base, Transactions, MildlyUnsafeTransaction
 from fault_reason import reason
 import pandas as pd
+from tensorflow.keras.models import load_model
 
 app = FastAPI()
 app.add_middleware(
@@ -24,8 +25,8 @@ app.add_middleware(
 
 Base.metadata.create_all(bind=engine)
 
+model = load_model(os.path.join("model", "fraud_detect.keras"))
 pack = joblib.load(os.path.join("model", "models.joblib"))
-model = pack['model']
 enc1 = pack['enc1']
 enc2 = pack['enc2']
 sc = pack['scaler']
