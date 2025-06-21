@@ -1,0 +1,33 @@
+name: Retrain ML Model
+
+on:
+  schedule:
+    - cron: '0 0 * * 1,4'
+  workflow_dispatch:        
+  push:
+    branches:
+      - main               
+
+permissions:
+  contents: write
+
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+    env:
+      DB_URL: ${{ secrets.DB_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python retrain_model.py
+      - run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add model/
+          git commit -m "Update trained model" || echo "No changes to commit"
+          git push
