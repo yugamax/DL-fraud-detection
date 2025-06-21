@@ -12,6 +12,7 @@ from db_init import SessionLocal, engine
 from db_handling import Base, Transactions, MildlyUnsafeTransaction
 from fault_reason import reason
 import pandas as pd
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 from tensorflow.keras.models import load_model
 
 app = FastAPI()
@@ -97,7 +98,7 @@ def predict(data: Transaction_data, db: Session = Depends(get_db)):
         input_data = np.array(data2).reshape(1, -1)
         input_data = sc.transform(input_data)
         prediction = model.predict(input_data)[0]
-        confidence = model.predict_proba(input_data)[0][prediction]
+        confidence = float(np.max(prediction, axis=1)[0])
 
         filters = [
             Transactions.FLAG == float(prediction),
@@ -167,4 +168,4 @@ def predict(data: Transaction_data, db: Session = Depends(get_db)):
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run(app, host="127.0.0.1", port=port)
