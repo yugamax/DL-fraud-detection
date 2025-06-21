@@ -97,8 +97,9 @@ def predict(data: Transaction_data, db: Session = Depends(get_db)):
 
         input_data = np.array(data2).reshape(1, -1)
         input_data = sc.transform(input_data)
-        prediction = model.predict(input_data)[0]
-        confidence = float(np.max(prediction, axis=1)[0])
+        prediction = model.predict(input_data)
+        confidence = float(np.max(prediction))
+        predicted_class = int(np.argmax(prediction))
 
         filters = [
             Transactions.FLAG == float(prediction),
